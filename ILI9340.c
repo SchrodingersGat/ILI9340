@@ -3,14 +3,9 @@
 static uint16_t ILI9340_WIDTH = ILI9340_TFTWIDTH;
 static uint16_t ILI9340_HEIGHT = ILI9340_TFTHEIGHT;
 
-static LPC_SSP_T *spi;
-
 static uint16_t PEN_THICKNESS = 1;
 static uint16_t TEXT_OPTIONS = TEXT_DEFAULT | TEXT_FILL_BACKGROUND;
 static uint16_t BACKGROUND_COLOR = WHITE;
-
-#define COL_BUF_SIZE 512
-static uint16_t color_buffer[COL_BUF_SIZE];
 
 void ILI9340_SetBackgroundColor(uint16_t bg)
 {
@@ -32,71 +27,40 @@ uint16_t ILI9340_GetPenThickness()
 	return PEN_THICKNESS;
 }
 
-
-void ILI9340_SetSpi(LPC_SSP_T *spiPtr)
-{
-	spi = spiPtr;
-}
-
-void CS_Low()
-{
-	//CS is pin 1.14
-	Chip_GPIO_SetPinState(LPC_GPIO, 1, 14, 0);
-}
-
-void CS_High()
-{
-	//CS is pin 1.14
-	Chip_GPIO_SetPinState(LPC_GPIO, 1, 14, 1);
-}
-
-void DC_Low()
-{
-	//DC is pin 0.14
-	Chip_GPIO_SetPinState(LPC_GPIO, 0, 14, 0);
-}
-
-void DC_High()
-{
-	//DC is pin 0.14
-	Chip_GPIO_SetPinState(LPC_GPIO, 0, 14, 1);
-}
-
 //Write a single command or data byte to the LCD
 void ILI9340_WriteCommand(uint8_t command)
 {
-	DC_Low();
-	CS_Low();
+	ILI9340_DC_Low();
+	ILI9340_CS_Low();
 
-	SPI_Transfer_8Bit(spi,command);
+	ILI9340_Tx_8bit(command);
 
-	CS_High();
+	ILI9340_CS_High();
 }
 
 void ILI9340_WriteData(uint8_t data)
 {
+	ILI9340_DC_High();
+	ILI9340_CS_Low();
 
-	DC_High();
-	CS_Low();
+	ILI9340_Tx_8bit(data);
 
-	SPI_Transfer_8Bit(spi,data);
-
-	CS_High();
+	ILI9340_CS_High();
 }
 
 void ILI9340_WriteDataBytes(uint16_t *data, uint16_t size)
 {
-	uint8_t i = 0;
+	uint16_t i = 0;
 
-	DC_High();
-	CS_Low();
+	ILI9340_DC_High();
+	ILI9340_CS_Low();
 
 	for (i=0;i<size;i++)
 	{
-		SPI_Transfer_16Bit(spi, data[i]);
+		ILI9340_Tx_16bit(data[i]);
 	}
 
-	CS_High();
+	ILI9340_CS_High();
 }
 
 void ILI9340_Initialize()
@@ -360,55 +324,36 @@ void ILI9340_DrawBitmap(uint16_t x, uint16_t y, uint16_t w, uint16_t h, const ui
 
 	ILI9340_SetAddressWindow(x, y, x+w-1, y+h-1);
 
-	DC_High();
-	CS_Low();
+	ILI9340_DC_High();
+	ILI9340_CS_Low();
 
 	for (i=0;i<(nPix-1);i++)
 	{
-		SPI_Transfer_16Bit(spi,bitmapData[i]);
+		ILI9340_Tx_16bit(bitmapData[i]);
 	}
 
-	CS_High();
+	ILI9340_CS_High();
 }
 
 void ILI9340_FillRect(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t color)
 {
 	if (w == 0 || h == 0) return;
 
-	uint32_t tmp;
-	uint32_t i = 0;
 	uint32_t nPix = (uint32_t) w * (uint32_t) h;
 
 	ILI9340_SetAddressWindow(x, y, x+w-1, y+h-1);
 
-	DC_High();
-	CS_Low();
-
-	SPI_16Bit();
+	ILI9340_DC_High();
+	ILI9340_CS_Low();
 
 	while (nPix > 0)
 	{
-		if (nPix >= COL_BUF_SIZE)
-		{
-			tmp = COL_BUF_SIZE;
-		}
-		else
-		{
-			tmp = nPix;
-		}
+		ILI9340_Tx_16bit(color);
 
-		nPix -= tmp;
-
-		for (i=0;i<tmp;i++)
-		{
-			color_buffer[i] = color;
-		}
-
-		// Bulk transfer saves time
-		Chip_SSP_WriteFrames_Blocking(spi, color_buffer, tmp * 2);
+		nPix--;
 	}
 
-	CS_High();
+	ILI9340_CS_High();
 }
 
 void ILI9340_FillScreen(uint16_t color)

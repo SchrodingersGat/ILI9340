@@ -22,23 +22,10 @@ extern "C" {
  * ILI9340_Tx_16bit
 **/
 
-// Pin functions
+// This file must be defined by application
+#include "ILI9340_linker.h"
 
-// Chip Select pin
-void ILI9340_CS_Low();
-void ILI9340_CS_High();
-// Data / Command pin
-void ILI9340_DC_Low();
-void ILI9340_DC_High();
-// Reset pin
-void ILI9340_Reset_High();
-void ILI9340_Reset_Low();
-
-// SPI functions
-void ILI9340_Tx_8bit(uint8_t data);
-void ILI9340_Tx_16bit(uint8_t data);
-
-//Genreric graphic functions
+// Generic graphic functions
 uint16_t ILI9340_ColorFromRGB(uint8_t r, uint8_t g, uint8_t b); //!< Convert an RGB color into LCD color
 uint8_t ILI9340_RedComponent(uint16_t);
 uint8_t ILI9340_GreenComponent(uint16_t);
@@ -47,8 +34,7 @@ void ILI9340_SetPenThickness(uint16_t t);
 void ILI9340_SetTextOptions(uint16_t opt);
 void ILI9340_SetBackgroundColor(uint16_t bg);
 
-//SPI functions
-void ILI9340_SetSpi(LPC_SSP_T *spiPtr);
+// SPI functions
 void ILI9340_WriteCommand(uint8_t command);
 void ILI9340_WriteData(uint8_t data);
 void ILI9340_WriteDataBytes(uint16_t *data, uint16_t size);
