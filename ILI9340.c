@@ -63,6 +63,19 @@ void ILI9340_WriteDataBytes(uint16_t *data, uint16_t size)
 	ILI9340_CS_High();
 }
 
+void ILI9340_Reset()
+{
+    ILI9340_Reset_High();
+    ILI9340_PauseMs(5);
+    ILI9340_Reset_Low();
+    ILI9340_PauseMs(20);
+    ILI9340_Reset_High();
+    ILI9340_PauseMs(20);
+    
+    ILI9340_Initialize();
+    ILI9340_PauseMs(5);
+}   
+
 void ILI9340_Initialize()
 {
 	ILI9340_WriteCommand(0xEF);

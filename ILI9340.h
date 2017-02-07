@@ -20,6 +20,7 @@ extern "C" {
  * ILI9340_Reset_High
  * ILI9340_Tx_8bit
  * ILI9340_Tx_16bit
+ * ILI9340_PauseMs
 **/
 
 // This file must be defined by application
@@ -39,6 +40,7 @@ void ILI9340_WriteCommand(uint8_t command);
 void ILI9340_WriteData(uint8_t data);
 void ILI9340_WriteDataBytes(uint16_t *data, uint16_t size);
 
+void ILI9340_Reset();
 void ILI9340_Initialize();	//!< ILI9340 initilization routines
 void ILI9340_Rotate(uint8_t dir);
 void ILI9340_SetAddressWindow(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2);
