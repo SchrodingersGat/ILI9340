@@ -12,15 +12,15 @@ extern "C" {
 
 /** Low-level inteface functions
  * These functions must be defined specific to the device:
- * ILI9340_CS_Low
- * ILI9340_CS_High
- * ILI9340_DC_Low
- * ILI9340_DC_High
- * ILI9340_Reset_Low
- * ILI9340_Reset_High
- * ILI9340_Tx_8bit
- * ILI9340_Tx_16bit
- * ILI9340_PauseMs
+ * void ILI9340_CS_Low()
+ * void ILI9340_CS_High()
+ * void ILI9340_DC_Low()
+ * void ILI9340_DC_High()
+ * void ILI9340_Reset_Low()
+ * void ILI9340_Reset_High()
+ * uint8_t ILI9340_TxRx_8bit(uint8_t data)
+ * void ILI9340_Tx_16bit(uint16_t data)
+ * voidILI9340_PauseMs()
 **/
 
 // This file must be defined by application

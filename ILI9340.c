@@ -1,6 +1,6 @@
 #include "ILI9340.h"
 
-static uint16_t ILI9340_WIDTH = ILI9340_TFTWIDTH;
+static uint16_t ILI9340_WIDTH  = ILI9340_TFTWIDTH;
 static uint16_t ILI9340_HEIGHT = ILI9340_TFTHEIGHT;
 
 static uint16_t PEN_THICKNESS = 1;
@@ -33,7 +33,7 @@ void ILI9340_WriteCommand(uint8_t command)
 	ILI9340_DC_Low();
 	ILI9340_CS_Low();
 
-	ILI9340_Tx_8bit(command);
+	ILI9340_TxRx_8bit(command);
 
 	ILI9340_CS_High();
 }
@@ -43,7 +43,7 @@ void ILI9340_WriteData(uint8_t data)
 	ILI9340_DC_High();
 	ILI9340_CS_Low();
 
-	ILI9340_Tx_8bit(data);
+	ILI9340_TxRx_8bit(data);
 
 	ILI9340_CS_High();
 }
