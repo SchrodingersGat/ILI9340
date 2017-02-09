@@ -2172,7 +2172,7 @@ const unsigned char FONT_DATA[] =
 
 // Character descriptors for OpenSymbol 16pt
 // { [Char width in bits], [Offset into openSymbol_16ptCharBitmaps in bytes] }
-const LCD_CHAR_INFO CHAR_LOOKUP[] =
+const ILI9340_CHAR_INFO CHAR_LOOKUP[] =
 {
     {2, 0}, 		// !
     {5, 21}, 		// "
