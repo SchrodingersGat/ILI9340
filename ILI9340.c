@@ -3,8 +3,9 @@
 static uint16_t ILI9340_WIDTH  = ILI9340_TFTWIDTH;
 static uint16_t ILI9340_HEIGHT = ILI9340_TFTHEIGHT;
 
+static uint8_t TEXT_SIZE = 1;
 static uint16_t PEN_THICKNESS = 1;
-static uint16_t TEXT_OPTIONS = TEXT_DEFAULT | TEXT_FILL_BACKGROUND;
+static uint16_t TEXT_OPTIONS = TEXT_DEFAULT;
 static uint16_t BACKGROUND_COLOR = WHITE;
 
 void ILI9340_SetBackgroundColor(uint16_t bg)
@@ -15,6 +16,19 @@ void ILI9340_SetBackgroundColor(uint16_t bg)
 void ILI9340_SetTextOptions(uint16_t opt)
 {
 	TEXT_OPTIONS = opt;
+}
+
+void ILI9340_SetTextSize(uint8_t ts)
+{
+	if (ts < 1)
+		ts = 1;
+
+	TEXT_SIZE = ts;
+}
+
+uint8_t ILI9340_GetTextSize()
+{
+	return TEXT_SIZE;
 }
 
 void ILI9340_SetPenThickness(uint16_t t)
@@ -459,7 +473,7 @@ uint16_t ILI9340_ColorFromRGB(uint8_t r, uint8_t g, uint8_t b)
 	return (uint16_t) ((r & 0xF8) << 8) | ((g & 0xFC) << 3) | (b >> 3);
 }
 
-void ILI9340_DrawString(uint16_t x, uint16_t y, char *data, uint16_t color, uint8_t size)
+void ILI9340_DrawString(uint16_t x, uint16_t y, char *data, uint16_t color)
 {
 	//Initial string position
 	uint16_t x0 = x;
@@ -479,7 +493,7 @@ void ILI9340_DrawString(uint16_t x, uint16_t y, char *data, uint16_t color, uint
 
 		if (c == '\n') //Newline character
 		{
-			y += size * FONT_HEIGHT; //Auto move down to next line
+			y += TEXT_SIZE * FONT_HEIGHT; //Auto move down to next line
 
 			if ((TEXT_OPTIONS & ALIGN_CENTRE) > 0)
 			{
@@ -493,20 +507,75 @@ void ILI9340_DrawString(uint16_t x, uint16_t y, char *data, uint16_t color, uint
 
 		else if (c == ' ') //Space character
 		{
-			x += size * FONT_SPACE_SIZE;
+			x += TEXT_SIZE * FONT_SPACE_SIZE;
 		}
 		else if (c > 32 && c < 127) //Printable characters
 		{
-			ILI9340_DrawChar(x, y, c, color, size);
+			if (TEXT_OPTIONS & TEXT_TRANSPARENT)
+			{
+				ILI9340_DrawTransparentChar(x, y, c, color);
+			}
+			else
+			{
+				ILI9340_DrawChar(x, y, c, color);
+			}
 
-			x += size * (char_width(c) + FONT_CHAR_GAP);
+			x += TEXT_SIZE * (char_width(c) + FONT_CHAR_GAP);
 		}
 
 		i++;
 	}
 }
 
-void ILI9340_DrawChar(uint16_t x, uint16_t y, char c, uint16_t color, uint8_t size)
+void ILI9340_DrawChar(uint16_t x, uint16_t y, char c, uint16_t color)
+{
+	// Extract character data
+	uint16_t address = char_address(c);
+	uint8_t width = char_width(c);
+
+	uint8_t lineData = 0;
+	uint16_t pixColor;
+
+	uint16_t i,j; // Interators
+
+	// Width and height of this letter
+	uint16_t W = width * TEXT_SIZE;
+	uint16_t H = FONT_HEIGHT * TEXT_SIZE;
+
+	ILI9340_SetAddressWindow(x, y, x+W-1, y+H-1);
+
+	ILI9340_DC_High();
+	ILI9340_CS_Low();
+
+	for (j=0; j<H; j++)
+	{
+		for (i=0; i<W; i++)
+		{
+			if ((i%8) == 0) // Start of a new data byte
+			{
+				lineData = FONT_DATA[address];
+				address++;
+			}
+
+			if ((lineData & 0x01) == 1)
+			{
+				pixColor = color;
+			}
+			else
+			{
+				pixColor = BACKGROUND_COLOR;
+			}
+
+			ILI9340_Tx_16bit(pixColor);
+
+			lineData >>= 1;
+		}
+	}
+
+	ILI9340_CS_High();
+}
+
+void ILI9340_DrawTransparentChar(uint16_t x, uint16_t y, char c, uint16_t color)
 {
 	uint16_t address = char_address(c);
 	uint8_t width = char_width(c);
@@ -534,22 +603,18 @@ void ILI9340_DrawChar(uint16_t x, uint16_t y, char c, uint16_t color, uint8_t si
 			{
 				pixColor = color;
 			}
-			else if ((TEXT_OPTIONS & TEXT_FILL_BACKGROUND) > 0)
-			{
-				pixColor = BACKGROUND_COLOR; //fill with background
-			}
 			else
 			{
-				drawPixel = 0; //dont do anything
+				drawPixel = 0; // Do not draw this pixel
 			}
 
 			if (drawPixel == 1)
 			{
 				ILI9340_FillRect(
-						x+i*size,
-						y+j*size,
-						size,
-						size,
+						x+i*TEXT_SIZE,
+						y+j*TEXT_SIZE,
+						TEXT_SIZE,
+						TEXT_SIZE,
 						pixColor);
 			}
 

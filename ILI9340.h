@@ -34,6 +34,8 @@ uint8_t ILI9340_BlueComponent(uint16_t);
 void ILI9340_SetPenThickness(uint16_t t);
 void ILI9340_SetTextOptions(uint16_t opt);
 void ILI9340_SetBackgroundColor(uint16_t bg);
+void ILI9340_SetTextSize(uint8_t ts);
+uint8_t ILI9340_GetTextSize();
 
 // SPI functions
 void ILI9340_WriteCommand(uint8_t command);
@@ -64,8 +66,9 @@ void ILI9340_HorizontalLine(uint16_t x, uint16_t y, uint16_t w, uint16_t color);
 void ILI9340_VerticalLine(uint16_t x, uint16_t y, uint16_t h, uint16_t color);
 
 //Character functions
-void ILI9340_DrawChar(uint16_t x, uint16_t y, char c, uint16_t color, uint8_t size);
-void ILI9340_DrawString(uint16_t x, uint16_t y, char *data, uint16_t color, uint8_t size);
+void ILI9340_DrawChar(uint16_t x, uint16_t y, char c, uint16_t color);
+void ILI9340_DrawTransparentChar(uint16_t x, uint16_t y, char c, uint16_t color);
+void ILI9340_DrawString(uint16_t x, uint16_t y, char *data, uint16_t color);
 
 #ifdef __cplusplus
 }

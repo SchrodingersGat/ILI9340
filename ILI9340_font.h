@@ -7,9 +7,7 @@ enum FontOptions
 {
 	TEXT_DEFAULT 		= 0x0000,	//!< No special options
 
-	//Fill options
-    TEXT_FILL_BACKGROUND= 0x0001,	//!< Fill in the background
-    TEXT_OUTLINE		= 0x0002,	//!< Text is outline only
+    TEXT_TRANSPARENT	= 0x0001,	//!< Don't fill with background color
 
     WRAP_CHARACTER		= 0x0010,	//!< Wrap lines at each character
     WRAP_WORD 			= 0x0020,	//!< Wrap lines at each word
