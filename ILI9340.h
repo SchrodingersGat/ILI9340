@@ -11,20 +11,17 @@ extern "C" {
 #endif
 
 /** Low-level inteface functions
- * These functions must be defined specific to the device:
- * void ILI9340_CS_Low()
- * void ILI9340_CS_High()
- * void ILI9340_DC_Low()
- * void ILI9340_DC_High()
- * void ILI9340_Reset_Low()
- * void ILI9340_Reset_High()
- * uint8_t ILI9340_TxRx_8bit(uint8_t data)
- * void ILI9340_Tx_16bit(uint16_t data)
- * voidILI9340_PauseMs()
-**/
-
-// This file must be defined by application
-#include "ILI9340_linker.h"
+ * These functions must be provided in user code
+ */
+void ILI9340_CS_Low();
+void ILI9340_CS_High();
+void ILI9340_DC_Low();
+void ILI9340_DC_High();
+void ILI9340_Reset_Low();
+void ILI9340_Reset_High();
+uint8_t ILI9340_TxRx_8bit(uint8_t data);
+void ILI9340_Tx_16bit(uint16_t data);
+void ILI9340_PauseMs(uint16_t ms);
 
 // Generic graphic functions
 uint16_t ILI9340_ColorFromRGB(uint8_t r, uint8_t g, uint8_t b); //!< Convert an RGB color into LCD color
