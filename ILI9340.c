@@ -80,14 +80,14 @@ void ILI9340_WriteDataBytes(uint16_t *data, uint16_t size)
 void ILI9340_Reset()
 {
     ILI9340_Reset_High();
-    ILI9340_PauseMs(5);
+    ILI9340_PauseMs(10);
     ILI9340_Reset_Low();
-    ILI9340_PauseMs(20);
+    ILI9340_PauseMs(25);
     ILI9340_Reset_High();
-    ILI9340_PauseMs(20);
+    ILI9340_PauseMs(25);
     
     ILI9340_Initialize();
-    ILI9340_PauseMs(5);
+    ILI9340_PauseMs(25);
 }   
 
 void ILI9340_Initialize()
